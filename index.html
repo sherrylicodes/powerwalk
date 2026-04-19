@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PowerWalk</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img src="./logo.png" class="brand-icon" alt="PowerWalk logo" />
+          <div>
+            <div class="brand-title">PowerWalk</div>
+            <div class="brand-subtitle">Peripheral Neuropathy Assessment</div>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div id="steps-pill" class="status-pill step-pill">0 Steps</div>
+          <button id="connect-btn" class="connect-btn">Connect Shoe</button>
+        </div>
+      </header>
+
+      <div class="top-divider"></div>
+
+      <main class="main-grid">
+        <section class="panel heatmap-panel">
+          <div class="panel-header">
+            <div>
+              <h1>Foot Pressure Map</h1>
+              <p>Green = low pressure, yellow = medium, red = high</p>
+            </div>
+          </div>
+
+          <div id="heatmap-container" class="heatmap-container"></div>
+
+          <div class="legend">
+            <span>Low</span>
+            <div class="legend-bar"></div>
+            <span>High</span>
+          </div>
+        </section>
+
+        <aside class="panel insights-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Live Insights</h2>
+              <p>Simple, useful, judge-friendly feedback</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Left / Right Balance</div>
+            <div id="balance-value" class="metric-value">50% / 50%</div>
+            <div id="balance-subtext" class="metric-subtext">Balanced stance</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Peak Pressure Zone</div>
+            <div id="peak-zone-value" class="metric-value">—</div>
+            <div id="peak-zone-subtext" class="metric-subtext">Waiting for live data</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Stability Cue</div>
+            <div id="stability-value" class="metric-value">Ready</div>
+            <div id="stability-subtext" class="metric-subtext">Connect device to begin</div>
+          </div>
+
+          <div class="metric-card subtle-card">
+            <div class="metric-label">Blister Risk</div>
+            <div id="blister-risk-value" class="metric-value">Low</div>
+            <div id="blister-risk-subtext" class="metric-subtext">
+              Waiting for red hotspot data.
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>
