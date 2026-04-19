@@ -1,8 +1,17 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Dict, List
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 LEFT_KEYS = ["L_BIG_TOE", "L_TOES", "L_BALL", "L_ARCH", "L_HEEL"]
 RIGHT_KEYS = ["R_BIG_TOE", "R_TOES", "R_BALL", "R_ARCH", "R_HEEL"]

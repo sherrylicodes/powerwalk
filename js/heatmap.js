@@ -42,13 +42,27 @@ function scaleRadius(baseR, value) {
 }
 
 function findTwoMainFootPaths(svgDoc) {
-  const group = svgDoc.querySelector("svg > g");
-  if (!group) {
-    throw new Error("Could not find transformed <g> in PmTzQ01.svg");
+  const svgRoot = svgDoc.querySelector("svg");
+  if (!svgRoot) {
+    throw new Error("No <svg> root found in PmTzQ01.svg");
   }
 
-  const transform = group.getAttribute("transform") || "";
-  const allPaths = Array.from(group.querySelectorAll("path"));
+  // Find the first group that has paths in it
+  const candidateGroups = Array.from(svgDoc.querySelectorAll("g"));
+  let chosenGroup = null;
+
+  for (const group of candidateGroups) {
+    const paths = group.querySelectorAll("path");
+    if (paths.length >= 2) {
+      chosenGroup = group;
+      break;
+    }
+  }
+
+  const scope = chosenGroup || svgRoot;
+  const inheritedTransform = chosenGroup?.getAttribute("transform") || "";
+
+  const allPaths = Array.from(scope.querySelectorAll("path"));
 
   if (allPaths.length < 2) {
     throw new Error("Could not find enough path elements in PmTzQ01.svg");
@@ -70,10 +84,14 @@ function findTwoMainFootPaths(svgDoc) {
   const leftPath = firstNumberA < firstNumberB ? a.d : b.d;
   const rightPath = firstNumberA < firstNumberB ? b.d : a.d;
 
-  return { leftPath, rightPath, transform };
+  return {
+    leftPath,
+    rightPath,
+    transform: inheritedTransform,
+  };
 }
 
-export async function createHeatmap(containerSelector = "#heatmap-container", svgUrl = "./PmTzQ01.svg") {
+export async function createHeatmap(containerSelector = "#heatmap-container", svgUrl = "/PmTzQ01.svg") {
   const container = document.querySelector(containerSelector);
   if (!container) throw new Error(`Container not found: ${containerSelector}`);
 
@@ -89,7 +107,6 @@ export async function createHeatmap(containerSelector = "#heatmap-container", sv
   const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
 
   const { leftPath, rightPath, transform } = findTwoMainFootPaths(svgDoc);
-
   const svg = createSvgEl("svg", {
     viewBox: "0 0 600 614",
     class: "foot-heatmap-svg",
@@ -189,29 +206,23 @@ const leftOutline = createSvgEl("path", {
   "stroke-linecap": "round",
 });
 
-leftOutline.style.filter = "drop-shadow(0 0 6px rgba(255,255,255,0.6))";
-
-// glow layer (behind)
 const leftGlow = createSvgEl("path", {
   d: leftPath,
   transform,
   fill: "none",
-  stroke: "rgba(255,255,255,0.25)",
-  "stroke-width": "10",
+  stroke: "rgba(255,255,255,0.08)",
+  "stroke-width": "4",
 });
-leftGlow.style.filter = "blur(6px)";
+leftGlow.style.filter = "blur(8px)";
 
 const rightGlow = createSvgEl("path", {
   d: rightPath,
   transform,
   fill: "none",
-  stroke: "rgba(255,255,255,0.25)",
-  "stroke-width": "10",
+  stroke: "rgba(255,255,255,0.08)",
+  "stroke-width": "4",
 });
-rightGlow.style.filter = "blur(6px)";
-
-svg.appendChild(leftGlow);
-svg.appendChild(rightGlow);
+rightGlow.style.filter = "blur(8px)";
 
 const rightOutline = createSvgEl("path", {
   d: rightPath,
@@ -224,6 +235,7 @@ const rightOutline = createSvgEl("path", {
 });
 
 rightOutline.style.filter = "drop-shadow(0 0 6px rgba(255,255,255,0.6))";
+
 
   svg.appendChild(leftOutline);
   svg.appendChild(rightOutline);

@@ -4,7 +4,7 @@ import { createHeatmap } from "./heatmap.js";
 import { connectToShoeBLE } from "./ble.js";
 
 const connectBtn = document.getElementById("connect-btn");
-const connectionPill = document.getElementById("connection-pill");
+const connectionPill = document.getElementById("steps-pill");
 
 const balanceValue = document.getElementById("balance-value");
 const balanceSubtext = document.getElementById("balance-subtext");
@@ -18,6 +18,8 @@ const stabilitySubtext = document.getElementById("stability-subtext");
 let heatmap = null;
 let demoTimer = null;
 
+
+
 const SENSOR_LABELS = {
   L_BIG_TOE: "Left big toe",
   L_TOES: "Left toes",
@@ -30,6 +32,21 @@ const SENSOR_LABELS = {
   R_ARCH: "Right arch",
   R_HEEL: "Right heel",
 };
+
+async function getAIAnalysis(sensorData) {
+  const response = await fetch("http://localhost:8000/predict", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      features: sensorData
+    })
+  });
+
+  const result = await response.json();
+  return result;
+}
 
 function setConnectionState(mode) {
   if (mode === "connected") {
@@ -156,7 +173,7 @@ function startDemoMode() {
 
 async function init() {
   try {
-    heatmap = await createHeatmap("#heatmap-container", "./PmTzQ01.svg");
+    heatmap = await createHeatmap("#heatmap-container", "/PmTzQ01.svg");
     startDemoMode();
   } catch (err) {
     console.error("Heatmap init failed:", err);
@@ -192,5 +209,21 @@ connectBtn.addEventListener("click", async () => {
     startDemoMode();
   }
 });
+
+async function testAI() {
+  const sensorData = [
+    0.8, 0.4, 0.9,
+    0.7, 0.5, 0.8,
+    0.6,
+    0.7,
+    0.5,
+    0.4
+  ];
+
+  const result = await getAIAnalysis(sensorData);
+  console.log("AI Result:", result);
+}
+
+testAI();
 
 init();
